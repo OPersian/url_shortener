@@ -1,7 +1,8 @@
 """
 Views logic of the URL Shortener API.
 """
-
+from django.urls import resolve, Resolver404
+from django.shortcuts import redirect
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,20 +25,26 @@ class FetchContentView(HandleAPIExceptionMixin, APIView):
     GET response example (status 200): TODO TBD
     GET response example (status 404): TODO TBD key not found
     GET response example (status 400): TODO TBD
+
+    # TODO what case? -> if using resolve(url)
+        404 {
+        "detail": "Not found."
+          }
     """
 
     def get(self, request, *args, **kwargs):
-        # TODO if a get request is made to the shortened url then the user should be redirected to the the original url,
-        #  or returned the contents of the original url.
-
-        #  TODO Graceful Forward: Check if the website exists before forwarding.
         key = kwargs.get("key")
-        url = ShortenedUrlData.objects.filter(key=key).first()
-        if url:
-            # TODO redirect / return content
-            return Response({'heyya': url.original_url.url}, status=status.HTTP_200_OK)
+        shortened_url_data = ShortenedUrlData.objects.filter(key=key).first()
+        if shortened_url_data:
+            url = shortened_url_data.original_url.url
+            try:
+                # FIXME Graceful Forward: Check if the website exists before forwarding.
+                # resolve(url)
+                return redirect(url)
+            except Resolver404:
+                return Response({'error': "TBD error msg 111"}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({'error': "TBD error msg"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': "TBD error msg 222"}, status=status.HTTP_404_NOT_FOUND)
 
 
 # TODO rewrite as generic
