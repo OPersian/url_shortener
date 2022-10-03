@@ -2,7 +2,6 @@
 Views logic of the URL Shortener API.
 """
 from django.db.models import Sum
-from django.urls import resolve, Resolver404
 from django.shortcuts import redirect
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -26,28 +25,19 @@ class FetchContentView(APIView):
     GET response example (status 200): TODO TBD
     GET response example (status 404): TODO TBD key not found
     GET response example (status 400): TODO TBD
-
-    # TODO what case? -> if using resolve(url)
-        404 {
-        "detail": "Not found."
-          }
     """
-
-    # TODO improve errors verbose
 
     def get(self, request, *args, **kwargs):
         key = kwargs.get("key")
         shortened_url_data = ShortenedUrlData.objects.filter(key=key).first()
         if shortened_url_data:
             url = shortened_url_data.original_url_data.url
-            try:
-                # FIXME Graceful Forward: Check if the website exists before forwarding.
-                # resolve(url)
-                return redirect(url)
-            except Resolver404:
-                return Response({'error': "TBD error msg 111"}, status=status.HTTP_404_NOT_FOUND)
+            return redirect(url)
         else:
-            return Response({'error': "TBD error msg 222"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'detail': f"Shortened url with key {key} is not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 # TODO rewrite as generic, handle exceptions consistently
@@ -84,6 +74,7 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     serializer_class = OriginalUrlDataSerializer
 
     def post(self, request, format=None):
+        # TODO omit trailing slash for "https://google.com", and "https://google.com/" to be considered the same url.
         original_url = self.request.data.get("url")
         key = ShortenedUrlData.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)
