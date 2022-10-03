@@ -25,6 +25,6 @@ urlpatterns = [
     path(
         "<str:key>/",
         views.FetchContentView.as_view(),
-        name="fetch-content-url",
+        name="fetch-content",
     ),
 ]

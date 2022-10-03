@@ -4,7 +4,6 @@ URL shortening utilities.
 
 import secrets
 import string
-from typing import Optional
 from urllib.parse import urlunsplit
 
 from django.conf import settings

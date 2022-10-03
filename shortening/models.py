@@ -23,6 +23,7 @@ class Url(CommonInfo):
     Pair of corresponding original URL and corresponding and shortened URL key.
     """
 
+    # TODO index
     original_url = models.URLField(unique=True)
     shortened_url_key = models.CharField(unique=True, max_length=KEY_LENGTH, null=True)
 
@@ -37,6 +38,7 @@ class UserIp(CommonInfo):
     """
     IP a user made a request from (IPv4).
     """
+
     # TODO validate 0.0. 0.0 to 255.255.255.255
     # TODO can it be NULL?
     user_ip = models.CharField(max_length=15, null=True)
@@ -52,6 +54,7 @@ class UrlShorteningRequest(CommonInfo):
     """
     All URL-unique requests users ever made to shorten provided URLs.
     """
+
     user_ip = models.ForeignKey(UserIp, on_delete=models.RESTRICT)
     url = models.ForeignKey(Url, on_delete=models.RESTRICT)
 
