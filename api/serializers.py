@@ -34,7 +34,7 @@ class UrlShorteningRequestListSerializer(serializers.ListSerializer):
                 "www.amazon.com"
             ]
         """
-        return [obj.url.url for obj in data]
+        return [obj.original_url_data.url for obj in data]
 
 
 class UrlShorteningRequestSerializer(serializers.ModelSerializer):
@@ -55,4 +55,4 @@ class UrlShorteningRequestSerializer(serializers.ModelSerializer):
         """
         Get an original url provided a shortened one.
         """
-        return obj.url.url
+        return obj.original_url_data.url

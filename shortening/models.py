@@ -30,6 +30,7 @@ class OriginalUrlData(CommonInfo):
     class Meta:
         db_table = "original_url_data"
 
+    # FIXME fix this here and in other models
     # def __str__(self):
     #     return f"{self.__name__}: {self.pk}, {self.url}"
 
@@ -83,8 +84,8 @@ class UrlShorteningRequest(CommonInfo):
     """
 
     client_ip = models.ForeignKey(ClientIp, on_delete=models.RESTRICT)
-    url = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)  # TODO rename to original_url_data
-    key = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)  # TODO rename to shortened_url_data
+    original_url_data = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)
+    shortened_url_data = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)
 
     class Meta:
         db_table = "url_shortening_request"

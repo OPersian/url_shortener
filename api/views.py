@@ -92,8 +92,8 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
             client_ip, created = ClientIp.objects.get_or_create(client_ip=get_client_ip(request))
             _ = UrlShorteningRequest.objects.create(
                 client_ip=client_ip,
-                url=original_url_data,
-                key=shortened_url_data,
+                original_url_data=original_url_data,
+                shortened_url_data=shortened_url_data,
             )
 
             return Response({'shortened_url': shortened_url}, status=status.HTTP_201_CREATED)
@@ -119,7 +119,9 @@ class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
 
     def get(self, request, *args, **kwargs):
         # FIXME should be distinct values
-        count = UrlShorteningRequest.objects.annotate(Count("client_ip", distinct=True)).count()
+        count = UrlShorteningRequest.objects.annotate(
+            Count("client_ip", distinct=True)
+        ).count()
         return Response(count, status=status.HTTP_200_OK)
 
 
@@ -130,7 +132,8 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
     NOTE: could be an empty list, if no requests were made to shorten an url.
 
     GET response example (status 200). Use case: if John made a request to shorten www.google.com,
-        Alice also made a request to shorten www.google.com, and Bob made a request to shorten www.amazon.com:
+        Alice also made a request to shorten www.google.com,
+        and Bob made a request to shorten www.amazon.com:
             [
                 "www.google.com",
                 "www.amazon.com"
@@ -139,4 +142,6 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
     COUNT = 10
     serializer_class = UrlShorteningRequestSerializer
     # FIXME should be distinct values
-    queryset = UrlShorteningRequest.objects.annotate(count=Count("url", distinct=True)).order_by("-count")[:COUNT]
+    queryset = UrlShorteningRequest.objects.annotate(
+        count=Count("original_url_data", distinct=True)
+    ).order_by("-count")[:COUNT]
