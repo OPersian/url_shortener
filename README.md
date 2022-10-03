@@ -47,9 +47,6 @@ sudo docker-compose -f docker-compose-local.yml up --build
 
 Sample `.env` structure is presented in the `.env.example`.
 
-#### Throttling
-
-Settings TBD: configure the backend in a way that the webservice could handle high traffic (eg. 1000 rps).
 
 ### Testing
 

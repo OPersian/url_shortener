@@ -1,6 +1,7 @@
 """
 Views logic of the URL Shortener API.
 """
+from django.db.models import Count
 from django.urls import resolve, Resolver404
 from django.shortcuts import redirect
 from rest_framework import generics, status
@@ -8,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.mixins import HandleAPIExceptionMixin
-from api.serializers import ShortenedUrlSerializer
-from shortening.models import ClientIp, OriginalUrl, ShortenedUrlData, UrlShorteningRequest
+from api.serializers import OriginalUrlDataSerializer, UrlShorteningRequestSerializer
+from shortening.models import ClientIp, OriginalUrlData, ShortenedUrlData, UrlShorteningRequest
 from shortening.utils.url_shortening_utils import create_shortened_url
 from shortening.utils.client_data_utils import get_client_ip
 
@@ -32,11 +33,13 @@ class FetchContentView(HandleAPIExceptionMixin, APIView):
           }
     """
 
+    # TODO improve errors verbose
+
     def get(self, request, *args, **kwargs):
         key = kwargs.get("key")
         shortened_url_data = ShortenedUrlData.objects.filter(key=key).first()
         if shortened_url_data:
-            url = shortened_url_data.original_url.url
+            url = shortened_url_data.original_url_data.url
             try:
                 # FIXME Graceful Forward: Check if the website exists before forwarding.
                 # resolve(url)
@@ -72,24 +75,24 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
         }
     """
 
-    serializer_class = ShortenedUrlSerializer
+    serializer_class = OriginalUrlDataSerializer
     # queryset = Url.objects.all()
 
     def post(self, request, format=None):
         original_url = self.request.data.get("url")
         key = ShortenedUrlData.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)
-        server_serializer = ShortenedUrlSerializer(data={
+        server_serializer = OriginalUrlDataSerializer(data={
             "url": original_url,
         })
         if server_serializer.is_valid():
-            original_url_obj = OriginalUrl.objects.create(url=original_url)
-            shortened_url_data = ShortenedUrlData.objects.create(original_url=original_url_obj, key=key)
+            original_url_data = OriginalUrlData.objects.create(url=original_url)
+            shortened_url_data = ShortenedUrlData.objects.create(original_url_data=original_url_data, key=key)
 
             client_ip, created = ClientIp.objects.get_or_create(client_ip=get_client_ip(request))
             _ = UrlShorteningRequest.objects.create(
                 client_ip=client_ip,
-                url=original_url_obj,
+                url=original_url_data,
                 key=shortened_url_data,
             )
 
@@ -106,15 +109,18 @@ class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
     Alice also made a request to shorten www.google.com, and Bob made a request
     to shorten www.amazon.com, return an integer value 3.
 
-    TODO NOTE: If Bob makes 20 requests from the same IP to shorten the same url,
+    NOTE: If Bob makes 20 requests from the same IP to shorten the same url,
     then the number of shortened urls count should only increase by one,
     i.e. the count increases by the number of unique urls provided from the same IP.
 
-    TODO NOTE: return zero (0) if no requests were made / no urls were shortened (btw is it the same?..):
-
-    GET response example (status 200): integer value
+    GET response example (status 200): integer value. NOTE: return zero (0) if no requests were made.
         3
     """
+
+    def get(self, request, *args, **kwargs):
+        # FIXME should be distinct values
+        count = UrlShorteningRequest.objects.annotate(Count("client_ip", distinct=True)).count()
+        return Response(count, status=status.HTTP_200_OK)
 
 
 class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView):
@@ -130,3 +136,7 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
                 "www.amazon.com"
             ]
     """
+    COUNT = 10
+    serializer_class = UrlShorteningRequestSerializer
+    # FIXME should be distinct values
+    queryset = UrlShorteningRequest.objects.annotate(count=Count("url", distinct=True)).order_by("-count")[:COUNT]

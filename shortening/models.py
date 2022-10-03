@@ -19,7 +19,7 @@ class CommonInfo(models.Model):
         abstract = True
 
 
-class OriginalUrl(CommonInfo):
+class OriginalUrlData(CommonInfo):
     """
     Original URL to be shortened.
     """
@@ -27,8 +27,11 @@ class OriginalUrl(CommonInfo):
     # TODO consider indexing
     url = models.URLField()
 
-    def __str__(self):
-        return f"{self.__name__}: {self.pk}, {self.url}"
+    class Meta:
+        db_table = "original_url_data"
+
+    # def __str__(self):
+    #     return f"{self.__name__}: {self.pk}, {self.url}"
 
 
 class ShortenedUrlData(CommonInfo):
@@ -38,15 +41,15 @@ class ShortenedUrlData(CommonInfo):
     A single original url can have multiple shortened url keys.
     """
 
-    original_url = models.ForeignKey(OriginalUrl, on_delete=models.RESTRICT)
+    original_url_data = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)
     # TODO consider indexing
     key = models.CharField(unique=True, max_length=15)
 
     class Meta:
         db_table = "shortened_url_data"
 
-    def __str__(self):
-        return f"{self.__name__}: {self.pk}, {self.key}"
+    # def __str__(self):
+    #     return f"{self.__name__}: {self.pk}, {self.key}"
 
     @staticmethod
     def create_unique_random_key(length: int = KEY_LENGTH) -> str:
@@ -70,8 +73,8 @@ class ClientIp(CommonInfo):
     class Meta:
         db_table = "client_ip"
 
-    def __str__(self):
-        return f"{self.__name__} : {self.client_ip}"
+    # def __str__(self):
+    #     return f"{self.__name__} : {self.client_ip}"
 
 
 class UrlShorteningRequest(CommonInfo):
@@ -80,11 +83,11 @@ class UrlShorteningRequest(CommonInfo):
     """
 
     client_ip = models.ForeignKey(ClientIp, on_delete=models.RESTRICT)
-    url = models.ForeignKey(OriginalUrl, on_delete=models.RESTRICT)
-    key = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)
+    url = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)  # TODO rename to original_url_data
+    key = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)  # TODO rename to shortened_url_data
 
     class Meta:
         db_table = "url_shortening_request"
 
-    def __str__(self):
-        return f"{self.__name__} : {self.pk}"
+    # def __str__(self):
+    #     return f"{self.__name__} : {self.pk}"
