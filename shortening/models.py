@@ -19,23 +19,34 @@ class CommonInfo(models.Model):
         abstract = True
 
 
-class Url(CommonInfo):
+class OriginalUrl(CommonInfo):
     """
-    Pair of corresponding original URL and corresponding and shortened URL key.
+    Original URL to be shortened.
+    """
+
+    # TODO consider indexing
+    url = models.URLField()
+
+    def __str__(self):
+        return f"{self.__name__}: {self.pk}, {self.url}"
+
+
+class ShortenedUrlData(CommonInfo):
+    """
+    Shortened URL data.
 
     A single original url can have multiple shortened url keys.
     """
 
-    # TODO consider indexing both fields
-    original_url = models.URLField()
-    # TODO consider moving out to a separate table
-    shortened_url_key = models.CharField(unique=True, max_length=15)
+    original_url = models.ForeignKey(OriginalUrl, on_delete=models.RESTRICT)
+    # TODO consider indexing
+    key = models.CharField(unique=True, max_length=15)
 
     class Meta:
-        db_table = "url"
+        db_table = "shortened_url_data"
 
     def __str__(self):
-        return f"{self.__name__}: {self.pk}, {self.shortened_url_key}"
+        return f"{self.__name__}: {self.pk}, {self.key}"
 
     @staticmethod
     def create_unique_random_key(length: int = KEY_LENGTH) -> str:
@@ -43,7 +54,7 @@ class Url(CommonInfo):
         Create a random key, ensuring its uniqueness.
         """
         key = create_random_key(length)
-        while Url.objects.filter(shortened_url_key=key).exists():
+        while ShortenedUrlData.objects.filter(key=key).exists():
             key = create_random_key(length)
         return key
 
@@ -69,7 +80,8 @@ class UrlShorteningRequest(CommonInfo):
     """
 
     client_ip = models.ForeignKey(ClientIp, on_delete=models.RESTRICT)
-    url = models.ForeignKey(Url, on_delete=models.RESTRICT)
+    url = models.ForeignKey(OriginalUrl, on_delete=models.RESTRICT)
+    key = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)
 
     class Meta:
         db_table = "url_shortening_request"
