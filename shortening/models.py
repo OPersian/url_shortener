@@ -7,6 +7,9 @@ from shortening.constants import KEY_LENGTH
 from shortening.utils.url_shortening_utils import create_random_key
 
 
+# NOTE: consider putting indexes to url and url key
+
+
 class CommonInfo(models.Model):
     """
     Common info for reuse by other shortening.
@@ -73,7 +76,7 @@ class ClientData(CommonInfo):
     IP a client made a request from (IPv4).
     """
 
-    # TODO validate 0.0.0.0 to 255.255.255.255
+    # NOTE: consider validating: 0.0.0.0 to 255.255.255.255
     client_ip = models.CharField(unique=True, max_length=15, null=True)
 
     class Meta:

@@ -3,7 +3,6 @@ Utilities related to client data.
 """
 
 
-# TODO consider security and other concerns
 def get_client_ip(request):
     """
     Get client IP.

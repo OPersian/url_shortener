@@ -60,6 +60,4 @@ Postman collection TBD.
 
 ### Future Improvements
 
-- indexation
 - high-load configuration e.g. 1000 rps
-- graceful forward: Check if the website exists before forwarding.

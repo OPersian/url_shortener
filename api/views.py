@@ -13,7 +13,7 @@ from shortening.models import ClientData, OriginalUrlData, ShortenedUrlData, Url
 from shortening.utils.url_shortening_utils import create_shortened_url
 from shortening.utils.client_data_utils import get_client_ip
 
-# TODO introduce logging
+# NOTE: introduce logging
 
 
 class FetchContentView(APIView):
@@ -32,6 +32,7 @@ class FetchContentView(APIView):
         shortened_url_data = ShortenedUrlData.objects.filter(key=key).first()
         if shortened_url_data:
             url = shortened_url_data.original_url_data.url
+            # NOTE: consider forwarding gracefully, i.e. checking if the website exists before forwarding.
             return redirect(url)
         else:
             return Response(
@@ -74,7 +75,8 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     serializer_class = OriginalUrlDataSerializer
 
     def post(self, request, format=None):
-        # TODO omit trailing slash for "https://google.com", and "https://google.com/" to be considered the same url.
+        # NOTE: consider omitting trailing slash, for "https://google.com" and "https://google.com/"
+        #  to be considered the same url.
         original_url = self.request.data.get("url")
         key = ShortenedUrlData.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)

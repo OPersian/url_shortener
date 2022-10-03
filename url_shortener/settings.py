@@ -29,7 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
-# TODO any way to deduce?
 SCHEME = os.environ.get("API_SCHEME", "http")
 NETLOC = os.environ.get("API_NETLOC", "0.0.0.0:8000")
 

@@ -17,12 +17,11 @@ def create_random_key(length: int = KEY_LENGTH) -> str:
 
     Example: "KLO7K9VV".
     """
-    # TODO not all uppercase e.g. "ouoYFY48"
+    # NOTE: consider not limiting the algo to uppercase, e.g. "ouoYFY48"
     chars = string.ascii_uppercase + string.digits
     return "".join(secrets.choice(chars) for _ in range(length))
 
 
-# TODO PEP params alignment
 def create_shortened_url(key: str,
                          path: str = settings.NETLOC,
                          protocol: str = settings.SCHEME,
