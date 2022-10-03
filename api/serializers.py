@@ -3,25 +3,12 @@ Serializers for URL shortening API.
 """
 from rest_framework import serializers
 
-from shortening.models import OriginalUrlData, ShortenedUrlData, UrlShorteningRequest
+from shortening.models import OriginalUrlData
 
 
-class OriginalUrlDataSerializer(serializers.ModelSerializer):
+class OriginalUrlDataListSerializer(serializers.ListSerializer):
     """
-    Serializer for a `shortening.models.OriginalUrl` model.
-    """
-    url = serializers.URLField()
-
-    class Meta:
-        model = OriginalUrlData
-        fields = [
-            "url",
-        ]
-
-
-class UrlShorteningRequestListSerializer(serializers.ListSerializer):
-    """
-    List serializer for a `shortening.models.UrlShorteningRequest`.
+    List serializer for a `shortening.models.OriginalUrlDataList`.
     """
 
     def to_representation(self, data):
@@ -34,25 +21,18 @@ class UrlShorteningRequestListSerializer(serializers.ListSerializer):
                 "www.amazon.com"
             ]
         """
-        return [obj.original_url_data.url for obj in data]
+        return [obj.url for obj in data]
 
 
-class UrlShorteningRequestSerializer(serializers.ModelSerializer):
+class OriginalUrlDataSerializer(serializers.ModelSerializer):
     """
-    Serializer for a `shortening.models.UrlShorteningRequest` model.
+    Serializer for a `shortening.models.OriginalUrl` model.
     """
-    url = serializers.SerializerMethodField()
+    url = serializers.URLField()
 
     class Meta:
-        model = UrlShorteningRequest
-        list_serializer_class = UrlShorteningRequestListSerializer
+        model = OriginalUrlData
+        list_serializer_class = OriginalUrlDataListSerializer
         fields = [
             "url",
         ]
-
-    @staticmethod
-    def get_url(obj):
-        """
-        Get an original url provided a shortened one.
-        """
-        return obj.original_url_data.url

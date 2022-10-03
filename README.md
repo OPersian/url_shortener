@@ -57,3 +57,8 @@ docker exec -it url_shortener python manage.py test --settings=url_shortener.set
 ```
 
 Postman collection TBD.
+
+### Future Improvements
+
+- indexation
+- high-load configuration e.g. 1000 rps

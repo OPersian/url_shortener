@@ -24,15 +24,24 @@ class OriginalUrlData(CommonInfo):
     Original URL to be shortened.
     """
 
-    # TODO consider indexing
-    url = models.URLField()
+    url = models.URLField(unique=True)
+    unique_ip_hits = models.IntegerField(default=0)
 
     class Meta:
         db_table = "original_url_data"
 
-    # FIXME fix this here and in other models
-    # def __str__(self):
-    #     return f"{self.__name__}: {self.pk}, {self.url}"
+    @staticmethod
+    def increment_unique_ip_count(original_url, client_ip, original_url_data):
+        """
+        Increment unique-ip count for the original url.
+        """
+        if not UrlShorteningRequest.objects.filter(
+            original_url_data__url=original_url,
+            client_data__client_ip=client_ip,
+        ).exists():
+            current_unique_ip_hits_count = original_url_data.unique_ip_hits
+            original_url_data.unique_ip_hits = current_unique_ip_hits_count + 1
+            original_url_data.save()
 
 
 class ShortenedUrlData(CommonInfo):
@@ -42,15 +51,11 @@ class ShortenedUrlData(CommonInfo):
     A single original url can have multiple shortened url keys.
     """
 
-    original_url_data = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)
-    # TODO consider indexing
     key = models.CharField(unique=True, max_length=15)
+    original_url_data = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)
 
     class Meta:
         db_table = "shortened_url_data"
-
-    # def __str__(self):
-    #     return f"{self.__name__}: {self.pk}, {self.key}"
 
     @staticmethod
     def create_unique_random_key(length: int = KEY_LENGTH) -> str:
@@ -74,9 +79,6 @@ class ClientData(CommonInfo):
     class Meta:
         db_table = "client_data"
 
-    # def __str__(self):
-    #     return f"{self.__name__} : {self.client_ip}"
-
 
 class UrlShorteningRequest(CommonInfo):
     """
@@ -89,6 +91,3 @@ class UrlShorteningRequest(CommonInfo):
 
     class Meta:
         db_table = "url_shortening_request"
-
-    # def __str__(self):
-    #     return f"{self.__name__} : {self.pk}"

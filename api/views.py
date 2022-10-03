@@ -1,7 +1,7 @@
 """
 Views logic of the URL Shortener API.
 """
-from django.db.models import Count
+from django.db.models import Sum
 from django.urls import resolve, Resolver404
 from django.shortcuts import redirect
 from rest_framework import generics, status
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.mixins import HandleAPIExceptionMixin
-from api.serializers import OriginalUrlDataSerializer, UrlShorteningRequestSerializer
+from api.serializers import OriginalUrlDataSerializer
 from shortening.models import ClientData, OriginalUrlData, ShortenedUrlData, UrlShorteningRequest
 from shortening.utils.url_shortening_utils import create_shortened_url
 from shortening.utils.client_data_utils import get_client_ip
@@ -76,7 +76,6 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     """
 
     serializer_class = OriginalUrlDataSerializer
-    # queryset = Url.objects.all()
 
     def post(self, request, format=None):
         original_url = self.request.data.get("url")
@@ -86,11 +85,14 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
             "url": original_url,
         })
         if server_serializer.is_valid():
-            original_url_data = OriginalUrlData.objects.create(url=original_url)
+            original_url_data, created_od = OriginalUrlData.objects.get_or_create(url=original_url)
             shortened_url_data = ShortenedUrlData.objects.create(original_url_data=original_url_data, key=key)
 
-            client_data, created = ClientData.objects.get_or_create(client_ip=get_client_ip(request))
-            # TODO consider incrementing unique-ip count for original url
+            client_ip = get_client_ip(request)
+            client_data, created_cd = ClientData.objects.get_or_create(client_ip=client_ip)
+
+            OriginalUrlData.increment_unique_ip_count(original_url, client_ip, original_url_data)
+
             _ = UrlShorteningRequest.objects.create(
                 client_data=client_data,
                 original_url_data=original_url_data,
@@ -102,7 +104,7 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
             return Response(server_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
+class ShortenedUrlsCountView(APIView):
     """
     Show how many urls have been shortened.
 
@@ -119,10 +121,9 @@ class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        # FIXME should be distinct values
-        count = UrlShorteningRequest.objects.annotate(
-            Count("client_data__client_ip", distinct=True)
-        ).count()
+        count = OriginalUrlData.objects.aggregate(
+            Sum("unique_ip_hits")
+        ).get("unique_ip_hits__sum")
         return Response(count, status=status.HTTP_200_OK)
 
 
@@ -139,10 +140,11 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
                 "www.google.com",
                 "www.amazon.com"
             ]
+
+    NOTE: Same prerequisite here. If Bob makes 20 requests from the same IP to shorten the same url,
+    then the number of shortened urls count should only increase by one,
+    i.e. in this case, the count increases by the number of unique urls provided from Bob's IP.
     """
     COUNT = 10
-    serializer_class = UrlShorteningRequestSerializer
-    # FIXME should be distinct values
-    queryset = UrlShorteningRequest.objects.annotate(
-        count=Count("original_url_data__url", distinct=True)
-    ).order_by("-count")[:COUNT]
+    serializer_class = OriginalUrlDataSerializer
+    queryset = OriginalUrlData.objects.all().order_by("-unique_ip_hits")[:COUNT]
