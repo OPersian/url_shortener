@@ -63,7 +63,7 @@ class ShortenedUrlData(CommonInfo):
         return key
 
 
-class ClientIp(CommonInfo):
+class ClientData(CommonInfo):
     """
     IP a client made a request from (IPv4).
     """
@@ -72,7 +72,7 @@ class ClientIp(CommonInfo):
     client_ip = models.CharField(unique=True, max_length=15, null=True)
 
     class Meta:
-        db_table = "client_ip"
+        db_table = "client_data"
 
     # def __str__(self):
     #     return f"{self.__name__} : {self.client_ip}"
@@ -83,7 +83,7 @@ class UrlShorteningRequest(CommonInfo):
     All requests clients ever made to shorten provided URLs.
     """
 
-    client_ip = models.ForeignKey(ClientIp, on_delete=models.RESTRICT)
+    client_data = models.ForeignKey(ClientData, on_delete=models.RESTRICT)
     original_url_data = models.ForeignKey(OriginalUrlData, on_delete=models.RESTRICT)
     shortened_url_data = models.ForeignKey(ShortenedUrlData, on_delete=models.RESTRICT)
 
