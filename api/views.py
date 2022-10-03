@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from api.mixins import HandleAPIExceptionMixin
 from api.serializers import ShortenedUrlSerializer
-from shortening.models import Url, UrlShorteningRequest, UserIp
+from shortening.models import Url
 from shortening.utils.url_shortening_utils import create_random_key, create_shortened_url
 
 
@@ -21,13 +21,15 @@ class FetchContentView(HandleAPIExceptionMixin, APIView):
     URL: `/<str:key>/`
 
     GET response example (status 200): TODO TBD
-    GET response example (status 404): TODO TBD
+    GET response example (status 404): TODO TBD key not found
     GET response example (status 400): TODO TBD
     """
 
     def get(self, request, *args, **kwargs):
         # TODO if a get request is made to the shortened url then the user should be redirected to the the original url,
         #  or returned the contents of the original url.
+
+        #  TODO Graceful Forward: Check if the website exists before forwarding.
         print(kwargs.get("key"))
         return Response({'heyya': "TBD"}, status=status.HTTP_200_OK)
 
@@ -64,15 +66,14 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
 
     def post(self, request, format=None):
         original_url = self.request.data.get("url")
-        key = create_random_key()
+        key = Url.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)
         server_serializer = ShortenedUrlSerializer(data={
             "original_url": original_url,
             "shortened_url": shortened_url,
         })
         if server_serializer.is_valid():
-            # TODO validate: perform a real request in the serializer (add to is_valid or per field)
-            # TODO store data in 'Url' model
+            # TODO store data: urls, UserIp
             return Response({'shortened_url': shortened_url}, status=status.HTTP_201_CREATED)
         else:
             return Response(server_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

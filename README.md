@@ -60,10 +60,3 @@ docker exec -it url_shortener python manage.py test --settings=url_shortener.set
 ```
 
 Postman collection TBD.
-
-### Future Improvements
-
-Consider improving the web service by introducing next features:
-
-- authentication;
-- differentiating requests by users (use case: several users requested from the same IP).
