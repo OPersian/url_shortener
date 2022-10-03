@@ -58,21 +58,27 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     URL: `/shorten_url/`
 
     POST parameters example:
+        ```
         {
             "url": "www.helloworld.com"
         }
+        ```
 
     POST response example (status 201):
+        ```
         {
             "shortened_url": 'http://www.your_service.com/ouoYFY48'
         }
+        ```
 
     POST response example (status 400). Use case: inappropriate original URL format provided:
+       ```
        {
             "url": [
                 "Enter a valid URL."
             ]
         }
+       ```
     """
 
     serializer_class = OriginalUrlDataSerializer
@@ -117,7 +123,9 @@ class ShortenedUrlsCountView(APIView):
     i.e. in this case, the count increases by the number of unique urls provided from Bob's IP.
 
     GET response example (status 200): integer value. NOTE: return zero (0) if no requests were made.
+        ```
         3
+        ```
     """
 
     def get(self, request, *args, **kwargs):
@@ -136,10 +144,12 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
     GET response example (status 200). Use case: if John made a request to shorten www.google.com,
         Alice also made a request to shorten www.google.com,
         and Bob made a request to shorten www.amazon.com:
+            ```
             [
                 "www.google.com",
                 "www.amazon.com"
             ]
+            ```
 
     NOTE: Same prerequisite here. If Bob makes 20 requests from the same IP to shorten the same url,
     then the number of shortened urls count should only increase by one,
