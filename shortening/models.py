@@ -48,29 +48,27 @@ class Url(CommonInfo):
         return key
 
 
-class UserIp(CommonInfo):
+class ClientIp(CommonInfo):
     """
-    IP a user made a request from (IPv4).
+    IP a client made a request from (IPv4).
     """
 
     # TODO validate 0.0.0.0 to 255.255.255.255
-    # TODO can it be NULL?
-    # TODO https://stackoverflow.com/a/4581997
-    user_ip = models.CharField(unique=True, max_length=15, null=True)
+    client_ip = models.CharField(unique=True, max_length=15, null=True)
 
     class Meta:
-        db_table = "user_ip"
+        db_table = "client_ip"
 
     def __str__(self):
-        return f"{self.__name__} : {self.user_ip}"
+        return f"{self.__name__} : {self.client_ip}"
 
 
 class UrlShorteningRequest(CommonInfo):
     """
-    All requests users ever made to shorten provided URLs.
+    All requests clients ever made to shorten provided URLs.
     """
 
-    user_ip = models.ForeignKey(UserIp, on_delete=models.RESTRICT)
+    client_ip = models.ForeignKey(ClientIp, on_delete=models.RESTRICT)
     url = models.ForeignKey(Url, on_delete=models.RESTRICT)
 
     class Meta:

@@ -8,11 +8,12 @@ from rest_framework.views import APIView
 
 from api.mixins import HandleAPIExceptionMixin
 from api.serializers import ShortenedUrlSerializer
-from shortening.models import Url
-from shortening.utils.url_shortening_utils import create_random_key, create_shortened_url
-
+from shortening.models import ClientIp, Url, UrlShorteningRequest
+from shortening.utils.url_shortening_utils import create_shortened_url
+from shortening.utils.client_data_utils import get_client_ip
 
 # TODO introduce logging
+
 
 class FetchContentView(HandleAPIExceptionMixin, APIView):
     """
@@ -30,8 +31,13 @@ class FetchContentView(HandleAPIExceptionMixin, APIView):
         #  or returned the contents of the original url.
 
         #  TODO Graceful Forward: Check if the website exists before forwarding.
-        print(kwargs.get("key"))
-        return Response({'heyya': "TBD"}, status=status.HTTP_200_OK)
+        key = kwargs.get("key")
+        url = Url.objects.filter(shortened_url_key=key).first()
+        if url:
+            # TODO redirect / return content
+            return Response({'heyya': url.original_url}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': "TBD error msg"}, status=status.HTTP_404_NOT_FOUND)
 
 
 # TODO rewrite as generic
@@ -73,7 +79,11 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
             "shortened_url": shortened_url,
         })
         if server_serializer.is_valid():
-            # TODO store data: urls, UserIp
+            url = Url.objects.create(original_url=original_url, shortened_url_key=key)
+
+            client_ip, created = ClientIp.objects.get_or_create(client_ip=get_client_ip(request))
+            _ = UrlShorteningRequest.objects.create(client_ip=client_ip, url=url)
+
             return Response({'shortened_url': shortened_url}, status=status.HTTP_201_CREATED)
         else:
             return Response(server_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
