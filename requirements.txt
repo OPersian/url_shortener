@@ -1,0 +1,6 @@
+# Web
+Django==4.1.1
+djangorestframework==3.14.0
+
+# Database
+psycopg2-binary==2.9.3

@@ -1,0 +1,11 @@
+# Docker related
+Docker/
+**/*Dockerfile*
+**/.dockerignore
+**/docker-compose-local.yml
+**/rebuild*.sh
+
+**/.pytest_cache
+**/__pycache__
+
+**/.git
