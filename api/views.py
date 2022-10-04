@@ -22,9 +22,12 @@ class FetchContentView(APIView):
 
     URL: `/<str:key>/`
 
-    GET response example (status 200): TODO TBD
-    GET response example (status 404): TODO TBD key not found
-    GET response example (status 400): TODO TBD
+    GET response example (status 200): fetched content.
+
+    GET response example (status 404):
+        ```
+        {'detail': f"Shortened url with key OUOYFY48 is not found."}
+        ```
     """
 
     def get(self, request, *args, **kwargs):
@@ -41,7 +44,6 @@ class FetchContentView(APIView):
             )
 
 
-# TODO rewrite as generic, handle exceptions consistently
 class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     """
     Logic to shorten a provided url or provide its content.
@@ -148,6 +150,7 @@ class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView
     then the number of shortened urls count should only increase by one,
     i.e. in this case, the count increases by the number of unique urls provided from Bob's IP.
     """
+
     COUNT = 10
     serializer_class = OriginalUrlDataSerializer
     queryset = OriginalUrlData.objects.all().order_by("-unique_ip_hits")[:COUNT]
