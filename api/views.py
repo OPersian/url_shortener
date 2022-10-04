@@ -78,6 +78,13 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     def post(self, request, format=None):
         # NOTE: consider omitting trailing slash, for "https://google.com" and "https://google.com/"
         #  to be considered the same url.
+
+        # NOTE: also, regardless of protocol, urls could be considered the same,
+        #  e.g. "https://google.com" and "http://google.com"
+
+        # NOTE: and now, both concerns combined: protocol and trailing slash; both to be considered the same:
+        #  "https://google.com" and "http://google.com/"
+
         # FIXME make protocol optional (check the whole flow)
         original_url = self.request.data.get("url")
         key = ShortenedUrlData.create_unique_random_key()

@@ -96,7 +96,7 @@ class ShortenedUrlsCountViewTest(BaseApiTest):
         """
         John made a request to shorten "www.example_1.com",
         Alice also made a request to shorten "www.example_1.com",
-        and Bob made 5 requests from the same IP to shorten "www.example_1.com" and "www.example_2.com".
+        and Bob made 10 requests from the same IP to shorten either "www.example_1.com" or "www.example_2.com".
 
         Expected output: 4
         """
@@ -122,4 +122,3 @@ class MostPopularShortenedUrlsViewTest(BaseApiTest):
 
 # TODO ShortenUrlViewTest; both urls, w/ or w/o protocol, work fine!
 # TODO FetchContentViewTest
-

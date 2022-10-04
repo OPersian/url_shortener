@@ -46,7 +46,6 @@ class OriginalUrlDataSerializer(serializers.ModelSerializer):
         Store the full path with schema though.
         """
         if '://' not in obj.url:
-            print(f"----------------- YES WE HIT IT 222222 --------------------")
             # NOTE: consider secure protocols
             url = 'http://' + obj.url
             print(url)
