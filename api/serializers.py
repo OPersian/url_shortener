@@ -46,6 +46,7 @@ class OriginalUrlDataSerializer(serializers.ModelSerializer):
         Store the full path with schema though.
         """
         if '://' not in obj.url:
+            # FIXME in the db, store with protocol
             # NOTE: consider secure protocols
             url = 'http://' + obj.url
             print(url)
