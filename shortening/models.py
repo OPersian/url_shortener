@@ -3,7 +3,6 @@ URL shortener shortening layer.
 """
 from django.db import models
 
-from api.validators import OptionalSchemeURLValidator
 from shortening.constants import KEY_LENGTH
 from shortening.utils.url_shortening_utils import create_random_key
 

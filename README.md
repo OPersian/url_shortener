@@ -60,4 +60,5 @@ Postman collection: [ref](https://crimson-astronaut-7958.postman.co/workspace/UV
 ### Future Improvements
 
 - high-load configuration e.g. 1000 rps;
-- write more tests.
+- write more tests;
+- consider resolving numerous NOTE:'s left in the codebase.

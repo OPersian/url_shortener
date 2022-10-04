@@ -19,8 +19,8 @@ urlpatterns = [
     ),
     path(
         "most_popular_urls/",
-        views.MostPopularShortenedUrlsView.as_view(),
-        name="most-popular-shortened-urls",
+        views.MostPopularUrlsView.as_view(),
+        name="most-popular-urls",
     ),
     path(
         "<str:key>/",

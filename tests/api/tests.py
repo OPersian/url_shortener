@@ -76,7 +76,7 @@ class ShortenedUrlsCountViewTest(BaseApiTest):
 
         Expected output: 3
         """
-        self.populate_client_request(client_ip=self.john_ip, original_url=self.original_url_1)
+        self.populate_client_request(client_ip=self.john_ip, original_url=self.original_url_1)  # NOQA
         self.populate_client_request(client_ip=self.alice_ip, original_url=self.original_url_1)
         self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_2)
         response = self.client.get(self.url)
@@ -119,9 +119,9 @@ class ShortenedUrlsCountViewTest(BaseApiTest):
         self.assertEqual(response.data, 4)
 
 
-class MostPopularShortenedUrlsViewTest(BaseApiTest):
+class MostPopularUrlsViewTest(BaseApiTest):
     """
-    Test MostPopularShortenedUrlsView logic.
+    Test MostPopularUrlsView logic.
     """
 
     url = "/most_popular_urls/"
@@ -218,7 +218,7 @@ class MostPopularShortenedUrlsViewTest(BaseApiTest):
         self.populate_client_request(client_ip=self.alice_ip, original_url=self.original_url_1)
         self.populate_client_request(client_ip=self.alice_ip, original_url=self.original_url_2)
 
-        for _ in range(3):
+        for _ in range(2):
             self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_1)
             self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_2)
             self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_3)

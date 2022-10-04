@@ -137,7 +137,7 @@ class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
         return Response(count, status=status.HTTP_200_OK)
 
 
-class MostPopularShortenedUrlsView(HandleAPIExceptionMixin, generics.ListAPIView):
+class MostPopularUrlsView(HandleAPIExceptionMixin, generics.ListAPIView):
     """
     Return a list of the 10 most shortened urls.
 
