@@ -3,6 +3,7 @@ URL shortener shortening layer.
 """
 from django.db import models
 
+from api.validators import OptionalSchemeURLValidator
 from shortening.constants import KEY_LENGTH
 from shortening.utils.url_shortening_utils import create_random_key
 
@@ -73,11 +74,10 @@ class ShortenedUrlData(CommonInfo):
 
 class ClientData(CommonInfo):
     """
-    IP a client made a request from (IPv4).
+    IP a client made a request from.
     """
 
-    # NOTE: consider validating: 0.0.0.0 to 255.255.255.255
-    client_ip = models.CharField(unique=True, max_length=15, null=True)
+    client_ip = models.GenericIPAddressField(unique=True, null=True)
 
     class Meta:
         db_table = "client_data"

@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from api.mixins import HandleAPIExceptionMixin
 from api.serializers import OriginalUrlDataSerializer
+from shortening.constants import ZERO
 from shortening.models import ClientData, OriginalUrlData, ShortenedUrlData, UrlShorteningRequest
 from shortening.utils.url_shortening_utils import create_shortened_url
 from shortening.utils.client_data_utils import get_client_ip
@@ -77,6 +78,7 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
     def post(self, request, format=None):
         # NOTE: consider omitting trailing slash, for "https://google.com" and "https://google.com/"
         #  to be considered the same url.
+        # FIXME make protocol optional (check the whole flow)
         original_url = self.request.data.get("url")
         key = ShortenedUrlData.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)
@@ -124,7 +126,7 @@ class ShortenedUrlsCountView(APIView):
     def get(self, request, *args, **kwargs):
         count = OriginalUrlData.objects.aggregate(
             Sum("unique_ip_hits")
-        ).get("unique_ip_hits__sum")
+        ).get("unique_ip_hits__sum") or ZERO
         return Response(count, status=status.HTTP_200_OK)
 
 

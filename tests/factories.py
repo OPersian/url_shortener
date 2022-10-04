@@ -16,7 +16,7 @@ class ClientDataFactory(factory.django.DjangoModelFactory):
     ClientData model factory for tests.
     """
 
-    client_ip = "255.255.255.255"
+    client_ip = "0.0.0.0"
 
     class Meta:
         model = ClientData
