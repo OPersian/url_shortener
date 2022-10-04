@@ -17,7 +17,7 @@ from shortening.utils.client_data_utils import get_client_ip
 # NOTE: introduce logging
 
 
-class FetchContentView(APIView):
+class FetchContentView(HandleAPIExceptionMixin, APIView):
     """
     Fetch original content via a shortened url.
 
@@ -105,7 +105,7 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
             return Response(server_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ShortenedUrlsCountView(APIView):
+class ShortenedUrlsCountView(HandleAPIExceptionMixin, APIView):
     """
     Show how many urls have been shortened.
 

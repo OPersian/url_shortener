@@ -111,7 +111,15 @@ class ShortenedUrlsCountViewTest(BaseApiTest):
         self.assertEqual(response.data, 4)
 
 
+class MostPopularShortenedUrlsViewTest(BaseApiTest):
+    """
+    Test MostPopularShortenedUrlsView logic.
+    """
+    url = "/most_popular_urls/"
+
+    # TODO test: only 10 to show up!
+
+
 # TODO ShortenUrlViewTest; both urls, w/ or w/o protocol, work fine!
 # TODO FetchContentViewTest
 
-# TODO MostPopularShortenedUrlsViewTest; only 10 to show up!

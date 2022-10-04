@@ -14,6 +14,8 @@ from api.exceptions import ApiCustomException
 class HandleAPIExceptionMixin(APIView):
     """
     Mixin to override handle_exception method in rest_framework views.
+
+    Mix it in all API views for consistent exceptions handling.
     """
 
     def handle_exception(self, exc):
