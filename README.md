@@ -50,14 +50,14 @@ Sample `.env` structure is presented in the `.env.example`.
 
 ### Testing
 
-Tests TBD.
-
+Command to run tests:
 ```
 docker exec -it url_shortener python manage.py test --settings=url_shortener.settings
 ```
 
-Postman collection TBD.
+Postman collection: [ref](https://crimson-astronaut-7958.postman.co/workspace/UVIK~090d8542-17c3-4002-b85f-95e5bc09a6fc/collection/3154580-5aa76d4e-b131-472f-beb1-b6fa15bc4b7b?action=share&creator=3154580).
 
 ### Future Improvements
 
-- high-load configuration e.g. 1000 rps
+- high-load configuration e.g. 1000 rps;
+- write more tests.

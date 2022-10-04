@@ -23,8 +23,8 @@ services:
       - .env
 
   db:
-    container_name: url_shortener_postgres
-    image: postgres:14.2
+    container_name: url_shortener_postgresql
+    image: postgres:14.5
     env_file:
       - .env
     environment:

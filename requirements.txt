@@ -1,6 +1,10 @@
 # Web
-Django==4.1.1
+Django==4.1.2
 djangorestframework==3.14.0
 
 # Database
 psycopg2-binary==2.9.3
+
+# Testing
+factory-boy==3.2.1
+mock==4.0.3

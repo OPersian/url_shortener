@@ -26,7 +26,7 @@ class FetchContentView(APIView):
 
     GET response example (status 404):
         ```
-        {'detail': f"Shortened url with key OUOYFY48 is not found."}
+        {"detail": "Shortened url with key 'OUOYFY48' is not found."}
         ```
     """
 
@@ -39,7 +39,7 @@ class FetchContentView(APIView):
             return redirect(url)
         else:
             return Response(
-                {'detail': f"Shortened url with key {key} is not found."},
+                {"detail": f"Shortened url with key '{key}' is not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -73,8 +73,6 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
         }
        ```
     """
-
-    serializer_class = OriginalUrlDataSerializer
 
     def post(self, request, format=None):
         # NOTE: consider omitting trailing slash, for "https://google.com" and "https://google.com/"
