@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'url_shortener.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DB_NAME = getenv('DB_NAME', 'poster_admin')  # FIXME url_shortener
+DB_NAME = getenv('DB_NAME', 'url_shortener')
 DB_USER = getenv('DB_USER', 'postgres')
 DB_PASSWORD = getenv('DB_PASSWORD', 'postgres')
 DB_HOST = getenv('DB_HOST', 'db')
