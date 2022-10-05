@@ -59,12 +59,12 @@ class ShortenUrlViewTest(BaseApiTest):
 
     def test_protocol_success(self):
         """
-        Provide a valid URL and ensure success.
+        Provide a valid URL with protocol and ensure url shortening success.
 
         Input URL: "https://www.example-2.com"
         """
         test_url = self.original_url_2
-        response = self.client.post(self.url, data={"url": test_url})
+        response = self.client.post(self.url, data={"url": test_url})  # NOQA
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         shortened_url = ShortenedUrlData.objects.first()
@@ -73,44 +73,38 @@ class ShortenUrlViewTest(BaseApiTest):
 
     def test_no_protocol_success(self):
         """
-        Provide a valid URL (no protocol indicated) and ensure success.
+        Provide a valid URL (no protocol indicated) and ensure url shortening success.
 
         Input URL: "www.example-1.com"
         """
         test_url = "www.example-1.com"
-        response = self.client.post(self.url, data={"url": test_url})
-        # FIXME
-        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        #
-        # shortened_url = ShortenedUrlData.objects.first()
-        # shortened_url_key = shortened_url.key if shortened_url else ""
-        # self.assertEqual(len(shortened_url_key), KEY_LENGTH)
+        response = self.client.post(self.url, data={"url": test_url})  # NOQA
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        shortened_url = ShortenedUrlData.objects.first()
+        shortened_url_key = shortened_url.key if shortened_url else ""
+        self.assertEqual(len(shortened_url_key), KEY_LENGTH)
 
     def test_incorrect_url_format_error(self):
         """
         Provide an invalid URL and ensure proper exception handling.
 
-        Input URL: "www.example_1111.com" (underscore present).
+        Input URL: "www.example-1.com.123.-".
+        TODO Input URL: "www.example_1111.com" (underscore present).
         """
-        test_url = "www.example_1111.com"
+        test_url = "!"
         response = self.client.post(self.url, data={"url": test_url})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         # TODO test response msg
-
-        # FIXME input url: www.example_1111.com, response (msg appears twice!):
-        #  {
-        #     "url": [
-        #         "Enter a valid URL.",
-        #         "Enter a valid URL."
-        #     ]
-        # }
 
 
 class FetchContentViewTest(BaseApiTest):
     """
     Test FetchContentView logic.
     """
+
+    # TODO use factories
 
     def test_content_fetch_success(self):
         """
@@ -123,9 +117,6 @@ class FetchContentViewTest(BaseApiTest):
         Provide non-existent shortened URL key and ensure redirect error (404).
         """
         # TODO
-
-
-# TODO use factories?
 
 
 class ShortenedUrlsCountViewTest(BaseApiTest):

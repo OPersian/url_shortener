@@ -3,9 +3,6 @@ Serializers for URL shortening API.
 """
 from rest_framework import serializers
 
-from api.validators import OptionalSchemeURLValidator
-from shortening.models import OriginalUrlData
-
 
 class OriginalUrlDataListSerializer(serializers.ListSerializer):
     """
@@ -25,32 +22,14 @@ class OriginalUrlDataListSerializer(serializers.ListSerializer):
         return [obj.url for obj in data]
 
 
-class OriginalUrlDataSerializer(serializers.ModelSerializer):
+class OriginalUrlDataSerializer(serializers.Serializer):
     """
     Serializer for a `shortening.models.OriginalUrl` model.
     """
     url = serializers.URLField()
-    # url = serializers.URLField(validators=[OptionalSchemeURLValidator()])
-    # url = serializers.SerializerMethodField(validators=[OptionalSchemeURLValidator()])
 
     class Meta:
-        model = OriginalUrlData
         list_serializer_class = OriginalUrlDataListSerializer
         fields = [
             "url",
         ]
-
-    # @staticmethod
-    # def get_url(obj):
-    #     """
-    #     Make URL protocol (schema) optional in the user input.
-    #
-    #     Store the full path with schema though.
-    #     """
-    #     if '://' not in obj.url:
-    #         # FIXME in the db, store with protocol
-    #         url = 'http://' + obj.url
-    #         print(url)
-    #     else:
-    #         url = obj.url
-    #     return url

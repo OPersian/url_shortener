@@ -85,13 +85,18 @@ class ShortenUrlView(HandleAPIExceptionMixin, APIView):
         # NOTE: and now, both concerns combined: protocol and trailing slash; both to be considered the same:
         #  "https://google.com" and "http://google.com/"
 
-        # FIXME make protocol optional (check the whole flow)
         original_url = self.request.data.get("url")
+
+        # NOTE: move it to the serializer (figure out a way to make validate() or validate_url() work).
+        if '://' not in original_url:
+            original_url = 'http://' + original_url
+
         key = ShortenedUrlData.create_unique_random_key()
         shortened_url = create_shortened_url(key=key)
         server_serializer = OriginalUrlDataSerializer(data={
             "url": original_url,
         })
+
         if server_serializer.is_valid():
             original_url_data, created_od = OriginalUrlData.objects.get_or_create(url=original_url)
             shortened_url_data = ShortenedUrlData.objects.create(original_url_data=original_url_data, key=key)
