@@ -12,6 +12,5 @@ class OptionalSchemeURLValidator(URLValidator):
 
     def __call__(self, value):
         if '://' not in value:
-            # NOTE: consider secure protocols
             value = 'http://' + value
         super(OptionalSchemeURLValidator, self).__call__(value)

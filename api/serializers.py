@@ -29,7 +29,8 @@ class OriginalUrlDataSerializer(serializers.ModelSerializer):
     """
     Serializer for a `shortening.models.OriginalUrl` model.
     """
-    url = serializers.URLField(validators=[OptionalSchemeURLValidator()])
+    url = serializers.URLField()
+    # url = serializers.URLField(validators=[OptionalSchemeURLValidator()])
     # url = serializers.SerializerMethodField(validators=[OptionalSchemeURLValidator()])
 
     class Meta:
@@ -48,7 +49,6 @@ class OriginalUrlDataSerializer(serializers.ModelSerializer):
     #     """
     #     if '://' not in obj.url:
     #         # FIXME in the db, store with protocol
-    #         # NOTE: consider secure protocols
     #         url = 'http://' + obj.url
     #         print(url)
     #     else:
