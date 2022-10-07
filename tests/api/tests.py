@@ -3,7 +3,10 @@ Test url shortener API views.
 """
 import logging
 
+from django.http import HttpResponse
 from django.test import TestCase
+
+from mock import patch
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -115,21 +118,17 @@ class FetchContentViewTest(BaseApiTest):
         self.original_url_data = OriginalUrlDataFactory()
         self.shortened_url_data = ShortenedUrlDataFactory()
 
-    def test_content_fetch_success(self):
+    @patch("api.views.redirect_adapted")
+    def test_content_fetch_success(self, redirect_mock):
         """
         Provide an existing shortened URL key and ensure redirect success.
         """
-
+        redirect_mock.return_value = HttpResponse(content="Test hello", status=status.HTTP_200_OK)
         url = self.url.format(self.shortened_url_data.key)
         response = self.client.get(url)
 
-        # self.assertRedirects(
-        #     response,
-        #     self.shortened_url_data.original_url_data.url,
-        #     status_code=status.HTTP_302_FOUND,
-        #     target_status_code=status.HTTP_200_OK,  # FIXME 200 not 404; TODO set up with mocks
-        #     fetch_redirect_response=True,
-        # )
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.content, b"Test hello")
 
     def test_content_not_found_error(self):
         """
@@ -138,7 +137,7 @@ class FetchContentViewTest(BaseApiTest):
         non_existing_url_key = "NONEXIST"
         url = self.url.format(non_existing_url_key)
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response.data.get("detail"),
             f"Shortened url with key '{non_existing_url_key}' is not found."

@@ -2,7 +2,7 @@
 Views logic of the URL Shortener API.
 """
 from django.db.models import Sum
-from django.shortcuts import redirect
+from api.utils.views_utils import redirect_adapted
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,8 +36,7 @@ class FetchContentView(HandleAPIExceptionMixin, APIView):
         shortened_url_data = ShortenedUrlData.objects.filter(key=key).first()
         if shortened_url_data:
             url = shortened_url_data.original_url_data.url
-            # NOTE: consider forwarding gracefully, i.e. checking if the website exists before forwarding.
-            return redirect(url)
+            return redirect_adapted(url)
         else:
             return Response(
                 {"detail": f"Shortened url with key '{key}' is not found."},
