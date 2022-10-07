@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from shortening.constants import KEY_LENGTH
-from shortening.models import ShortenedUrlData
+from shortening.models import OriginalUrlData, ShortenedUrlData
 
 from tests.factories import (
     ClientDataFactory,
@@ -90,6 +90,10 @@ class ShortenUrlViewTest(BaseApiTest):
         response = self.client.post(self.url, data={"url": test_url})  # NOQA
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        # Ensure "http" was added and stored with the original url
+        original_url_data = OriginalUrlData.objects.first()
+        self.assertIn("http", original_url_data.url)
+
         shortened_url = ShortenedUrlData.objects.first()
         shortened_url_key = shortened_url.key if shortened_url else ""
         self.assertEqual(len(shortened_url_key), KEY_LENGTH)
@@ -103,6 +107,7 @@ class ShortenUrlViewTest(BaseApiTest):
         test_url = "www.example_1111.com"
         response = self.client.post(self.url, data={"url": test_url})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # Ensure the response contains an error message
         self.assertIsNotNone(response.data.get("url"))
 
 
