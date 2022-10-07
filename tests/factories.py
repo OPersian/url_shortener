@@ -28,9 +28,12 @@ class ClientDataFactory(factory.django.DjangoModelFactory):
 class OriginalUrlDataFactory(factory.django.DjangoModelFactory):
     """
     OriginalUrlData model factory for tests.
+
+    NOTE: for 'url', the trailing slash is important, otherwise
+     a redirection error occurs in respective tests.
     """
 
-    url = 'http://example.com'
+    url = 'http://example.com/'
     unique_ip_hits = 0
 
     class Meta:

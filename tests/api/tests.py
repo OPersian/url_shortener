@@ -10,6 +10,12 @@ from rest_framework.test import APIClient
 from shortening.constants import KEY_LENGTH
 from shortening.models import ShortenedUrlData
 
+from tests.factories import (
+    ClientDataFactory,
+    OriginalUrlDataFactory,
+    ShortenedUrlDataFactory,
+)
+
 # Disable logging for tests
 logging.disable(logging.CRITICAL)
 
@@ -89,14 +95,12 @@ class ShortenUrlViewTest(BaseApiTest):
         """
         Provide an invalid URL and ensure proper exception handling.
 
-        Input URL: "www.example-1.com.123.-".
-        TODO Input URL: "www.example_1111.com" (underscore present).
+        Input URL: "www.example_1111.com" (underscore present).
         """
-        test_url = "!"
+        test_url = "www.example_1111.com"
         response = self.client.post(self.url, data={"url": test_url})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # TODO test response msg
+        self.assertIsNotNone(response.data.get("url"))
 
 
 class FetchContentViewTest(BaseApiTest):
@@ -104,19 +108,41 @@ class FetchContentViewTest(BaseApiTest):
     Test FetchContentView logic.
     """
 
-    # TODO use factories
+    url = "/{!s}/"
+
+    def setUp(self):
+        self.client_data = ClientDataFactory()
+        self.original_url_data = OriginalUrlDataFactory()
+        self.shortened_url_data = ShortenedUrlDataFactory()
 
     def test_content_fetch_success(self):
         """
-        Provide existent shortened URL key and ensure redirect success.
+        Provide an existing shortened URL key and ensure redirect success.
         """
-        # TODO
 
-    def test_content_fetch_not_found_error(self):
+        url = self.url.format(self.shortened_url_data.key)
+        response = self.client.get(url)
+
+        # self.assertRedirects(
+        #     response,
+        #     self.shortened_url_data.original_url_data.url,
+        #     status_code=status.HTTP_302_FOUND,
+        #     target_status_code=status.HTTP_200_OK,  # FIXME 200 not 404; TODO set up with mocks
+        #     fetch_redirect_response=True,
+        # )
+
+    def test_content_not_found_error(self):
         """
-        Provide non-existent shortened URL key and ensure redirect error (404).
+        Provide a non-existing shortened URL key and ensure redirect error (404).
         """
-        # TODO
+        non_existing_url_key = "NONEXIST"
+        url = self.url.format(non_existing_url_key)
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 404)
+        self.assertEqual(
+            response.data.get("detail"),
+            f"Shortened url with key '{non_existing_url_key}' is not found."
+        )
 
 
 class ShortenedUrlsCountViewTest(BaseApiTest):
