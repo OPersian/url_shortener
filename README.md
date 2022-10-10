@@ -92,7 +92,7 @@ Additional command to run load tests:
 docker exec -it url_shortener locust
 ```
 
-To run locust with several (e.g. 2) workers, you can use this command beforehand:
+To run locust with several (e.g. 2) workers, you can use this command to run fullstack:
 ```
 docker-compose -f docker-compose-prod.yml up --scale worker=2
 ```
