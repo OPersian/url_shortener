@@ -41,3 +41,21 @@ services:
       - "1337:80"
     depends_on:
       - web
+
+  master:
+    image: locustio/locust
+    ports:
+     - "8089:8089"
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://web:8000
+    depends_on:
+      - web
+
+  worker:
+    image: locustio/locust
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host master
+    depends_on:
+      - web
