@@ -26,6 +26,8 @@ Change the current directory to the cloned project root dir:
 cd url_shortener
 ```
 
+#### Devstack build
+
 Build the application:
 ```
 sudo docker-compose -f docker-compose-local.yml build
@@ -39,6 +41,24 @@ sudo docker-compose -f docker-compose-local.yml up
 Run and rebuild the application:
 ```
 sudo docker-compose -f docker-compose-local.yml up --build
+```
+
+#### Fullstack build
+
+To run a fullstack build, allowing for high-load testing, please use `docker-compose.yml`.
+
+Commands to build, run or run-and-build respectively are provided below.
+```
+sudo docker-compose -f docker-compose.yml build
+
+sudo docker-compose -f docker-compose.yml up
+
+sudo docker-compose -f docker-compose.yml up --build
+```
+
+You might want to remove devstack containers and related volumes beforehand:
+```
+sudo docker-compose down -v
 ```
 
 ### Configuration

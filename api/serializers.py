@@ -4,7 +4,7 @@ Serializers for URL shortening API.
 from rest_framework import serializers
 
 
-class OriginalUrlDataListSerializer(serializers.ListSerializer):
+class OriginalUrlDataListSerializer(serializers.ListSerializer):  # NOQA
     """
     List serializer for a `shortening.models.OriginalUrlDataList`.
     """
@@ -22,7 +22,7 @@ class OriginalUrlDataListSerializer(serializers.ListSerializer):
         return [obj.url for obj in data]
 
 
-class OriginalUrlDataSerializer(serializers.Serializer):
+class OriginalUrlDataSerializer(serializers.Serializer):  # NOQA
     """
     Serializer for a `shortening.models.OriginalUrl` model.
     """

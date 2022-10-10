@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: url_shortener
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - /bin/bash
+      - -c
+      - |
+        python manage.py migrate --noinput
+        gunicorn url_shortener.wsgi:application --bind 0.0.0.0:8000
+    restart: always
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  db:
+    container_name: url_shortener_postgresql
+    image: postgres:14.5
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data:/var/lib/postgresql/data

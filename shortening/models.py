@@ -84,7 +84,7 @@ class ClientData(CommonInfo):
 
 class UrlShorteningRequest(CommonInfo):
     """
-    All requests clients ever made to shorten provided URLs.
+    All requests clients ever made to shorten URLs.
     """
 
     client_data = models.ForeignKey(ClientData, on_delete=models.RESTRICT)
