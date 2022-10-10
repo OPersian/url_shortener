@@ -13,8 +13,8 @@ services:
         python manage.py migrate --noinput
         gunicorn url_shortener.wsgi:application --bind 0.0.0.0:8000
     restart: always
-    ports:
-      - '8000:8000'
+    expose:
+      - 8000
     depends_on:
       - db
     env_file:
@@ -34,3 +34,10 @@ services:
       - "5432:5432"
     volumes:
       - /var/lib/postgresql/data:/var/lib/postgresql/data
+
+  nginx:
+    build: ./config/nginx
+    ports:
+      - "1337:80"
+    depends_on:
+      - web
