@@ -16,12 +16,12 @@ Available endpoints include:
 
 ### Installation
 
-Clone git-repository:
+Clone the git repository:
 ```
 git clone git@github.com:OPersian/url_shortener.git
 ```
 
-Change the current directory to the cloned project root dir:
+Switch to the project root dir:
 ```
 cd url_shortener
 ```
