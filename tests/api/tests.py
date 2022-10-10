@@ -284,11 +284,11 @@ class MostPopularUrlsViewTest(BaseApiTest):
     def test_client_spammed_several_unique_original_urls(self):
         """
         John made requests to shorten "www.example-2.com" from their IP;
-        Alice also made requests to shorten "www.example_1.com", "www.example-2.com" from their IP;
-        and Bob made a lot of requests to shorten URLS from "www.example-1.com" through "www.example-11.com",
+        Alice made requests to shorten "www.example-1.com", "www.example-2.com" from their IP;
+        and Bob made requests to shorten URLS from "www.example-1.com" through "www.example-12.com",
         using their IP.
 
-        Ensure only top-10 entries shown up at max, i.e. "www.example_11.com" not showing up in the response.
+        Ensure only top-10 entries show up.
 
         Expected output:
             ```
@@ -306,6 +306,7 @@ class MostPopularUrlsViewTest(BaseApiTest):
             ]
             ```
         """
+        LIMIT = 10  # NOQA
         original_url_5 = "https://www.example-5.com"
         original_url_6 = "https://www.example-6.com"
         original_url_7 = "https://www.example-7.com"
@@ -313,28 +314,29 @@ class MostPopularUrlsViewTest(BaseApiTest):
         original_url_9 = "https://www.example-9.com"
         original_url_10 = "https://www.example-10.com"
         original_url_11 = "https://www.example-11.com"
+        original_url_12 = "https://www.example-12.com"
 
         self.populate_client_request(client_ip=self.john_ip, original_url=self.original_url_2)  # NOQA
 
         self.populate_client_request(client_ip=self.alice_ip, original_url=self.original_url_1)
         self.populate_client_request(client_ip=self.alice_ip, original_url=self.original_url_2)
 
-        for _ in range(2):
-            self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_1)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_2)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_3)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_4)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_5)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_6)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_7)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_8)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_9)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_10)
-            self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_11)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_1)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_2)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_3)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=self.original_url_4)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_5)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_6)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_7)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_8)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_9)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_10)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_11)
+        self.populate_client_request(client_ip=self.bob_ip, original_url=original_url_12)
 
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 10)
+        self.assertEqual(len(response.data), LIMIT)
 
         # data = response.data
         # print(f"-------------{data[0]}-----------")
@@ -347,8 +349,8 @@ class MostPopularUrlsViewTest(BaseApiTest):
         # print(f"-------------{data[7]}-----------")
         # print(f"-------------{data[8]}-----------")
         # print(f"-------------{data[9]}-----------")
-
-        # FIXME link #3 is not showing up, while #11 is
+        #
+        # # FIXME link #3 is not showing up, while #11 is
         # self.assertEqual(
         #     response.data,
         #     [
@@ -362,5 +364,6 @@ class MostPopularUrlsViewTest(BaseApiTest):
         #         original_url_8,
         #         original_url_9,
         #         original_url_10,
+        #         # original_url_11,
         #     ],
         # )

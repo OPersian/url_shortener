@@ -162,6 +162,6 @@ class MostPopularUrlsView(HandleAPIExceptionMixin, generics.ListAPIView):
     i.e. in this case, the count increases by the number of unique urls provided from Bob's IP.
     """
 
-    COUNT = 10
+    LIMIT = 10
     serializer_class = OriginalUrlDataSerializer
-    queryset = OriginalUrlData.objects.all().order_by("-unique_ip_hits")[:COUNT]
+    queryset = OriginalUrlData.objects.all().order_by("-unique_ip_hits")[:LIMIT]
