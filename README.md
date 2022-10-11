@@ -4,10 +4,10 @@ A web service that allows for URL shortening.
 
 Available endpoints include:
 
-- POST /shorten_url
-- GET /shorten_url 
-- GET /shortened_urls_count
-- GET /most_popular_urls
+- POST /shorten_url/
+- GET /<url_key>/ 
+- GET /shortened_urls_count/
+- GET /most_popular_urls/
 
 ### Application Requirements
 
