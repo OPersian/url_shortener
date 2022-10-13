@@ -77,7 +77,7 @@ jobs:
           export SECRET_KEY=test-secret-key
           export DEBUG=1
           export ALLOWED_HOSTS=localhost        
-          python manage.py test
+          pytest
       env:
         DATABASE_URL: postgres://${{ matrix.database-user }}:${{ matrix.database-password }}@${{ matrix.database-host }}:${{ matrix.database-port }}/${{ matrix.database-name }}
         SECRET_KEY: test-secret-key
