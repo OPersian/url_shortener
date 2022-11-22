@@ -132,8 +132,8 @@ class FetchContentViewTest(BaseApiTest):
         url = self.url.format(self.shortened_url_data.key)
         response = self.client.get(url)
 
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.content, b"Test hello")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.content, b"Test hello")
 
     def test_content_not_found_error(self):
         """
@@ -142,7 +142,7 @@ class FetchContentViewTest(BaseApiTest):
         non_existing_url_key = "NONEXIST"
         url = self.url.format(non_existing_url_key)
         response = self.client.get(url)
-        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response.data.get("detail"),
             f"Shortened url with key '{non_existing_url_key}' is not found."
