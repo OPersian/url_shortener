@@ -5,7 +5,7 @@ services:
     container_name: url_shortener
     build:
       context: .
-      dockerfile: config/docker/Dockerfile.dev
+      dockerfile: Dockerfile
     command:
       - /bin/bash
       - -c

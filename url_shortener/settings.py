@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = getenv('DJANGO_SECRET_KEY', 'test-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv("DEBUG") == "true"
@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'url_shortener.wsgi.application'
 DB_NAME = getenv('DB_NAME', 'postgres')
 DB_USER = getenv('DB_USER', 'postgres')
 DB_PASSWORD = getenv('DB_PASSWORD', 'postgres')
-DB_HOST = getenv('DB_HOST', 'db')
+DB_HOST = getenv('DB_HOST', 'localhost')
 DB_PORT = getenv('DB_PORT', '5432')
 
 
