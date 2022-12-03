@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   web:
+    platform: linux/amd64
     container_name: url_shortener
     build:
       context: .
@@ -25,6 +26,7 @@ services:
   db:
     container_name: url_shortener_postgresql
     image: postgres:14.5
+    platform: linux/amd64
     env_file:
       - .env
     environment:
